@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import {
   Cormorant_Garamond,
   Noto_Sans_Khmer,
@@ -30,6 +30,12 @@ export const metadata: Metadata = {
   ),
   title: `${weddingConfig.couple.groom.nameKh} & ${weddingConfig.couple.bride.nameKh} | ធៀបអញ្ជើញមង្គលការ${weddingConfig.sample ? " (គំរូ)" : ""}`,
   description: `${weddingConfig.title} — ${weddingConfig.dateLabel}។ ${weddingConfig.sample ? "នេះជាធៀបអញ្ជើញគំរូ មិនមែនជាកម្មវិធីពិតទេ។" : weddingConfig.wording.salutation}`,
+  applicationName: weddingConfig.title,
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: weddingConfig.title,
+  },
   openGraph: {
     type: "website",
     locale: "km_KH",
@@ -39,6 +45,11 @@ export const metadata: Metadata = {
       : weddingConfig.wording.salutation,
   },
   robots: weddingConfig.sample ? { index: false, follow: false } : undefined,
+};
+
+export const viewport: Viewport = {
+  themeColor: "#6E142F",
+  colorScheme: "light",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
