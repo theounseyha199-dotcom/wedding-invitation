@@ -1,4 +1,11 @@
-export type WeddingImage = { src: string; alt: string; caption: string };
+export type WeddingImage = {
+  src: string;
+  alt: string;
+  caption: string;
+  /** Intrinsic dimensions let photo frames preserve the full image without cropping. */
+  width?: number;
+  height?: number;
+};
 export type Venue = {
   name: string;
   address: string;
@@ -32,6 +39,13 @@ export type WeddingConfig = {
       parents: string[];
     };
     initials: string;
+  };
+  monogram?: {
+    initials: string;
+    style: "royal";
+    showOnEnvelope: boolean;
+    showOnHero: boolean;
+    showOnClosing: boolean;
   };
   wording: {
     invitation: string;

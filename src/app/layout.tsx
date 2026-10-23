@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
 import {
   Cormorant_Garamond,
   Noto_Sans_Khmer,
@@ -6,6 +7,15 @@ import {
 } from "next/font/google";
 import { weddingConfig } from "@/config/wedding";
 import "./globals.css";
+
+const khmerDisplay = localFont({
+  src: "../../public/fonts/KhmerOS_muollight.ttf",
+  variable: "--font-khmer-display",
+  weight: "400",
+  style: "normal",
+  display: "swap",
+  fallback: ["Noto Serif Khmer", "serif"],
+});
 
 const khmerSans = Noto_Sans_Khmer({
   subsets: ["khmer", "latin"],
@@ -48,7 +58,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#6E142F",
+  themeColor: "#BE8F83",
   colorScheme: "light",
 };
 
@@ -56,7 +66,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="km"
-      className={`${khmerSans.variable} ${khmerSerif.variable} ${latinSerif.variable}`}
+      className={`${khmerDisplay.variable} ${khmerSans.variable} ${khmerSerif.variable} ${latinSerif.variable}`}
     >
       <body>{children}</body>
     </html>

@@ -1,82 +1,52 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { createPortal } from "react-dom";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
-import { useReducedMotion } from "motion/react";
 import type { WeddingConfig } from "@/types/wedding";
 import { SectionReveal } from "@/components/ui/SectionReveal";
 import { FlyingButterflies } from "./FlyingButterflies";
+import { AnimatedDivider } from "./AnimatedDivider";
+
+const numberLabel = (index: number) => String(index + 1).padStart(2, "0");
 
 export function WeddingGallery({ config }: { config: WeddingConfig }) {
   const [active, setActive] = useState<number | null>(null);
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
-  const galleryRef = useRef<HTMLDivElement>(null);
-  const autoPauseUntil = useRef(0);
-  const reducedMotion = useReducedMotion();
+  const total = config.images.gallery.length;
+  const lightboxOpen = active !== null;
 
   useEffect(() => {
-    const gallery = galleryRef.current;
-    if (!gallery || reducedMotion || active !== null) return;
-
-    let timer: ReturnType<typeof setInterval> | undefined;
-    const stop = () => {
-      if (timer) clearInterval(timer);
-      timer = undefined;
-    };
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        stop();
-        if (!entry.isIntersecting) return;
-        timer = setInterval(() => {
-          if (
-            document.hidden ||
-            Date.now() < autoPauseUntil.current ||
-            gallery.contains(document.activeElement)
-          )
-            return;
-
-          const first = gallery.querySelector<HTMLElement>(".gallery-reveal");
-          if (!first) return;
-          const gap = Number.parseFloat(getComputedStyle(gallery).gap) || 0;
-          const atEnd =
-            gallery.scrollLeft >= gallery.scrollWidth - gallery.clientWidth - 4;
-          gallery.scrollTo({
-            left: atEnd ? 0 : gallery.scrollLeft + first.offsetWidth + gap,
-            behavior: "smooth",
-          });
-        }, 6500);
-      },
-      { threshold: 0.35 },
-    );
-    observer.observe(gallery);
-    return () => {
-      stop();
-      observer.disconnect();
-    };
-  }, [active, reducedMotion]);
-
-  const pauseAutoScroll = () => {
-    autoPauseUntil.current = Date.now() + 8000;
-  };
-
-  useEffect(() => {
-    if (active === null) return;
+    if (!lightboxOpen) return;
     closeRef.current?.focus();
+    const background = Array.from(
+      document.querySelectorAll<HTMLElement>(
+        "main, footer, .floating-controls",
+      ),
+    );
+    const previousInert = background.map((element) => element.inert);
+    background.forEach((element) => {
+      element.inert = true;
+    });
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") setActive(null);
-      if (event.key === "ArrowRight")
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
         setActive((v) =>
           v === null ? null : (v + 1) % config.images.gallery.length,
         );
-      if (event.key === "ArrowLeft")
+      }
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
         setActive((v) =>
           v === null
             ? null
             : (v - 1 + config.images.gallery.length) %
               config.images.gallery.length,
         );
+      }
       if (event.key === "Tab") {
         const buttons =
           dialogRef.current?.querySelectorAll<HTMLButtonElement>("button");
@@ -98,31 +68,36 @@ export function WeddingGallery({ config }: { config: WeddingConfig }) {
     return () => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = old;
+      background.forEach((element, index) => {
+        element.inert = previousInert[index];
+      });
       triggerRef.current?.focus();
     };
-  }, [active, config.images.gallery.length]);
+  }, [lightboxOpen, config.images.gallery.length]);
   return (
-    <section id="gallery" className="section gallery-section">
+    <section
+      id="gallery"
+      className="section gallery-section"
+      aria-labelledby="gallery-title"
+    >
       <FlyingButterflies scene="gallery" />
-      <SectionReveal className="gallery-heading">
-        <div>
+      <div className="gallery-heading">
+        <SectionReveal distance={8} delay={0.02}>
           <p className="eyebrow">MOMENTS TO TREASURE</p>
-          <h2 className="section-title">កម្រងរូបភាព</h2>
-        </div>
-        {!config.sample && (
-          <p>ទំព័រនៃអនុស្សាវរីយ៍ ដែលយើងចង់ចែករំលែកជាមួយអ្នក។</p>
-        )}
-      </SectionReveal>
-      <div
-        className="gallery-grid"
-        ref={galleryRef}
-        role="region"
-        aria-label="កម្រងរូបភាពអាពាហ៍ពិពាហ៍ អូសទៅម្ខាងដើម្បីមើលរូបបន្ទាប់"
-        tabIndex={0}
-        onPointerDown={pauseAutoScroll}
-        onWheel={pauseAutoScroll}
-        onKeyDown={pauseAutoScroll}
-      >
+        </SectionReveal>
+        <SectionReveal distance={10} delay={0.1}>
+          <h2 id="gallery-title" className="section-title">
+            កម្រងរូបភាព
+          </h2>
+        </SectionReveal>
+        <AnimatedDivider />
+        <SectionReveal distance={8} delay={0.22}>
+          <p className="gallery-subtitle">
+            ស្នាមញញឹម និងអនុស្សាវរីយ៍ដ៏មានតម្លៃ
+          </p>
+        </SectionReveal>
+      </div>
+      <div className="gallery-grid">
         {config.images.gallery.map((photo, index) => (
           <SectionReveal
             className={`gallery-reveal gallery-reveal-${index + 1}`}
@@ -131,26 +106,36 @@ export function WeddingGallery({ config }: { config: WeddingConfig }) {
             distance={8}
             variant="photo"
           >
-            <button
-              className={`gallery-tile gallery-tile-${index + 1}`}
-              onClick={(event) => {
-                triggerRef.current = event.currentTarget;
-                setActive(index);
-              }}
-              aria-label={`មើល ${photo.caption}`}
-            >
-              <Image
-                src={photo.src}
-                alt={photo.alt}
-                fill
-                sizes="(max-width: 700px) 90vw, 45vw"
-              />
-              <span className="gallery-caption">
-                <span>0{index + 1}</span>
-                {photo.caption}
-                <span aria-hidden="true">↗</span>
-              </span>
-            </button>
+            <figure className="gallery-figure">
+              <button
+                type="button"
+                className={`gallery-tile gallery-tile-${index + 1}`}
+                style={{
+                  aspectRatio:
+                    photo.width && photo.height
+                      ? `${photo.width} / ${photo.height}`
+                      : undefined,
+                }}
+                onClick={(event) => {
+                  triggerRef.current = event.currentTarget;
+                  setActive(index);
+                }}
+                aria-label={`បើករូបភាពទី ${index + 1}: ${photo.caption}`}
+              >
+                <Image
+                  src={photo.src}
+                  alt={photo.alt}
+                  fill
+                  sizes="(max-width: 599px) calc(100vw - 44px), (max-width: 999px) 45vw, 33vw"
+                />
+              </button>
+              <figcaption className="gallery-caption">
+                <span className="gallery-caption-number">
+                  {numberLabel(index)}
+                </span>
+                <span className="gallery-caption-text">{photo.caption}</span>
+              </figcaption>
+            </figure>
           </SectionReveal>
         ))}
       </div>
@@ -160,62 +145,74 @@ export function WeddingGallery({ config }: { config: WeddingConfig }) {
           សូមដាក់រូបភាពគូស្វាមីភរិយាពិតមុនចែករំលែកធៀប។
         </p>
       )}
-      {active !== null && (
-        <div
-          ref={dialogRef}
-          className="lightbox"
-          role="dialog"
-          aria-modal="true"
-          aria-label="កម្រងរូបភាព"
-          onMouseDown={(event) => {
-            if (event.target === event.currentTarget) setActive(null);
-          }}
-        >
-          <button
-            className="lightbox-close"
-            ref={closeRef}
-            onClick={() => setActive(null)}
-            aria-label="បិទរូបភាព"
+      {active !== null &&
+        createPortal(
+          <div
+            ref={dialogRef}
+            className="lightbox"
+            role="dialog"
+            aria-modal="true"
+            aria-label="កម្រងរូបភាព"
+            onMouseDown={(event) => {
+              if (event.target === event.currentTarget) setActive(null);
+            }}
           >
-            <X />
-          </button>
-          <button
-            className="lightbox-arrow"
-            onClick={() =>
-              setActive(
-                (active - 1 + config.images.gallery.length) %
-                  config.images.gallery.length,
-              )
-            }
-            aria-label="រូបភាពមុន"
-          >
-            <ChevronLeft />
-          </button>
-          <div className="lightbox-content">
-            <div className="lightbox-image">
-              <Image
-                src={config.images.gallery[active].src}
-                alt={config.images.gallery[active].alt}
-                fill
-                sizes="90vw"
-              />
+            <button
+              type="button"
+              className="lightbox-close"
+              ref={closeRef}
+              onClick={() => setActive(null)}
+              aria-label="បិទរូបភាព"
+            >
+              <X />
+            </button>
+            <button
+              type="button"
+              disabled={total < 2}
+              className="lightbox-arrow"
+              onClick={() =>
+                setActive(
+                  (active - 1 + config.images.gallery.length) %
+                    config.images.gallery.length,
+                )
+              }
+              aria-label="រូបភាពមុន"
+            >
+              <ChevronLeft />
+            </button>
+            <div className="lightbox-content">
+              <div className="lightbox-image">
+                <Image
+                  src={config.images.gallery[active].src}
+                  alt={config.images.gallery[active].alt}
+                  fill
+                  sizes="90vw"
+                />
+              </div>
+              <div className="lightbox-meta">
+                <p>{config.images.gallery[active].caption}</p>
+                <span
+                  aria-live="polite"
+                  aria-label={`រូបភាពទី ${active + 1} ក្នុងចំណោម ${total}`}
+                >
+                  {numberLabel(active)} / {String(total).padStart(2, "0")}
+                </span>
+              </div>
             </div>
-            <p>
-              {config.images.gallery[active].caption} · {active + 1} /{" "}
-              {config.images.gallery.length}
-            </p>
-          </div>
-          <button
-            className="lightbox-arrow"
-            onClick={() =>
-              setActive((active + 1) % config.images.gallery.length)
-            }
-            aria-label="រូបភាពបន្ទាប់"
-          >
-            <ChevronRight />
-          </button>
-        </div>
-      )}
+            <button
+              type="button"
+              disabled={total < 2}
+              className="lightbox-arrow"
+              onClick={() =>
+                setActive((active + 1) % config.images.gallery.length)
+              }
+              aria-label="រូបភាពបន្ទាប់"
+            >
+              <ChevronRight />
+            </button>
+          </div>,
+          document.body,
+        )}
     </section>
   );
 }

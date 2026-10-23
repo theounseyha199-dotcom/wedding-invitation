@@ -1,12 +1,14 @@
 import Image from "next/image";
 import { SectionReveal } from "@/components/ui/SectionReveal";
 import { FlyingButterflies } from "./FlyingButterflies";
+import { RomanticFloralDecoration } from "./RomanticFloralDecoration";
 import type { WeddingConfig } from "@/types/wedding";
 
 export function CoupleStory({ config }: { config: WeddingConfig }) {
   return (
     <section id="story" className="section story-section">
       <FlyingButterflies scene="story" />
+      <RomanticFloralDecoration position="bottom-left" variant="romantic" />
       <SectionReveal className="section-heading">
         <p className="eyebrow">OUR STORY</p>
         <h2 className="section-title">{config.story.title}</h2>
@@ -17,6 +19,12 @@ export function CoupleStory({ config }: { config: WeddingConfig }) {
           delay={0.1}
           distance={8}
           variant="photo"
+          style={{
+            aspectRatio:
+              config.images.story.width && config.images.story.height
+                ? `${config.images.story.width} / ${config.images.story.height}`
+                : undefined,
+          }}
         >
           <Image
             src={config.images.story.src}

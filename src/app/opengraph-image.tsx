@@ -2,6 +2,9 @@ import { ImageResponse } from "next/og";
 import { weddingConfig as config } from "@/config/wedding";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+export const alt = `${config.couple.groom.nameEn} & ${config.couple.bride.nameEn} — Wedding invitation`;
+
+// File-based image metadata cannot inherit CSS variables; mirror globals.css.
 export default function OpenGraphImage() {
   return new ImageResponse(
     <div
@@ -11,7 +14,7 @@ export default function OpenGraphImage() {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        background: "#6E142F",
+        background: "#EEDCE4",
         padding: 32,
       }}
     >
@@ -23,14 +26,14 @@ export default function OpenGraphImage() {
           alignItems: "center",
           justifyContent: "center",
           flexDirection: "column",
-          border: "2px solid #D8B46A",
-          background: "#48205F",
-          color: "#FFF8F0",
+          border: "2px solid #BE8F83",
+          background: "#FFF7F2",
+          color: "#4E3A3A",
         }}
       >
         <div
           style={{
-            color: "#D8B46A",
+            color: "#75504A",
             fontSize: 25,
             letterSpacing: 8,
             marginBottom: 24,
@@ -38,15 +41,32 @@ export default function OpenGraphImage() {
         >
           THE WEDDING INVITATION
         </div>
-        <div style={{ display: "flex", fontFamily: "serif", fontSize: 112 }}>
-          {config.couple.groom.nameEn} & {config.couple.bride.nameEn}
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            fontFamily: "serif",
+            fontSize: 76,
+          }}
+        >
+          <div>{config.couple.groom.nameEn}</div>
+          <div style={{ fontSize: 38, color: "#75504A" }}>&</div>
+          <div>{config.couple.bride.nameEn}</div>
         </div>
         <div
-          style={{ width: 240, borderTop: "1px solid #D8B46A", margin: 28 }}
+          style={{ width: 240, borderTop: "1px solid #BE8F83", margin: 22 }}
         />
-        <div style={{ fontSize: 31, color: "#D8B46A" }}>{config.dateLabel}</div>
+        <div style={{ fontSize: 27, color: "#75504A" }}>
+          {new Intl.DateTimeFormat("en-GB", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+            timeZone: config.timezone,
+          }).format(new Date(config.dateISO))}
+        </div>
         {config.sample && (
-          <div style={{ fontSize: 18, marginTop: 28 }}>SAMPLE INVITATION</div>
+          <div style={{ fontSize: 16, marginTop: 20 }}>SAMPLE INVITATION</div>
         )}
       </div>
     </div>,

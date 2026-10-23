@@ -78,7 +78,7 @@ try {
       if (Math.abs(music.volume - 0.35) > 0.01)
         failures.push(`Music volume was ${music.volume}, expected 0.35`);
       const heroImage = await page.locator(".hero-art img").getAttribute("src");
-      if (!heroImage?.includes("scene1.png"))
+      if (!heroImage?.includes("story2.png"))
         failures.push("Selected photo missing from hero");
       await page.locator("#story img").scrollIntoViewIfNeeded();
       await page.waitForFunction(
@@ -89,8 +89,8 @@ try {
         null,
         { timeout: 10000 },
       );
-      if ((await page.locator("#gallery img").count()) !== 4)
-        failures.push("Expected four sample gallery photos");
+      if ((await page.locator("#gallery img").count()) !== 7)
+        failures.push("Expected seven supplied gallery photos");
       const galleryLayout = await page
         .locator(".gallery-grid")
         .evaluate((gallery) => ({
@@ -103,13 +103,12 @@ try {
           ),
         }));
       if (
-        galleryLayout.display !== "flex" ||
-        galleryLayout.overflow !== "auto" ||
-        galleryLayout.scrollWidth <= galleryLayout.clientWidth ||
+        galleryLayout.display !== "grid" ||
+        galleryLayout.scrollWidth > galleryLayout.clientWidth + 1 ||
         !galleryLayout.imageFits
       )
         failures.push(
-          "Gallery was not a horizontal strip with uncropped photos",
+          "Gallery was not a responsive grid with uncropped photos",
         );
       for (const [index, image] of (
         await page.locator("#gallery img").all()
@@ -334,13 +333,6 @@ try {
         );
     }
     await page.locator("#gallery").scrollIntoViewIfNeeded();
-    if (width === 390) {
-      await page.waitForFunction(
-        () => document.querySelector(".gallery-grid")?.scrollLeft > 10,
-        null,
-        { timeout: 8500 },
-      );
-    }
     await page.waitForFunction(
       () =>
         document
@@ -353,7 +345,7 @@ try {
         .getAttribute("data-active")) !== "false"
     )
       failures.push(`${width}px offscreen hero butterfly did not pause`);
-    for (let index = 1; index <= 4; index++) {
+    for (let index = 1; index <= 7; index++) {
       const selector = `.gallery-reveal-${index}`;
       await page.locator(selector).scrollIntoViewIfNeeded();
       await page.waitForFunction(

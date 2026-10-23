@@ -2,6 +2,9 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { KhmerOrnament } from "@/components/ui/KhmerOrnament";
+import { WeddingMonogram } from "./WeddingMonogram";
+import { RoyalOrnamentalFrame } from "./RoyalOrnamentalFrame";
+import { RomanticFloralDecoration } from "./RomanticFloralDecoration";
 import type { WeddingConfig } from "@/types/wedding";
 
 export function WeddingEnvelope({ config }: { config: WeddingConfig }) {
@@ -54,13 +57,25 @@ export function WeddingEnvelope({ config }: { config: WeddingConfig }) {
               exit={reduced ? undefined : { rotateX: -165 }}
               transition={{ duration: 0.7 }}
             />
-            <div className="envelope-inner ornamental-frame">
+            <RoyalOrnamentalFrame
+              animated={false}
+              className="envelope-inner ornamental-frame"
+            >
+              <RomanticFloralDecoration
+                position="bottom-left"
+                animated={false}
+              />
               <KhmerOrnament className="envelope-ornament" />
               <p className="eyebrow">THE WEDDING INVITATION</p>
               <h2 className="khmer-title">{config.title}</h2>
-              <div className="wax-seal" aria-hidden="true">
-                {config.couple.initials}
-              </div>
+              {config.monogram?.showOnEnvelope !== false && (
+                <WeddingMonogram
+                  config={config}
+                  size="md"
+                  variant="seal"
+                  className="envelope-monogram"
+                />
+              )}
               <p className="envelope-names latin-display">
                 {config.couple.groom.nameEn} <span>&</span>{" "}
                 {config.couple.bride.nameEn}
@@ -78,7 +93,7 @@ export function WeddingEnvelope({ config }: { config: WeddingConfig }) {
                   ធៀបគំរូ • ព័ត៌មាន និងរូបភាពជាឧទាហរណ៍
                 </p>
               )}
-            </div>
+            </RoyalOrnamentalFrame>
           </motion.div>
         </motion.div>
       )}

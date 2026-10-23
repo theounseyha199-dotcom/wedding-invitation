@@ -1,13 +1,18 @@
 import Image from "next/image";
+import type { CSSProperties } from "react";
 import { SectionReveal } from "@/components/ui/SectionReveal";
 import { FlyingButterflies } from "./FlyingButterflies";
 import { ParallaxOrnament } from "./ParallaxOrnament";
+import { WeddingMonogram } from "./WeddingMonogram";
+import { RomanticFloralDecoration } from "./RomanticFloralDecoration";
 import type { WeddingConfig } from "@/types/wedding";
 
 export function WeddingHero({ config }: { config: WeddingConfig }) {
   return (
     <header className="hero" id="top">
       <FlyingButterflies scene="hero" />
+      <RomanticFloralDecoration position="top-left" variant="minimal" />
+      <RomanticFloralDecoration position="bottom-right" variant="minimal" />
       <div className="hero-topline">
         <span>THE WEDDING OF</span>
         <span>
@@ -23,6 +28,16 @@ export function WeddingHero({ config }: { config: WeddingConfig }) {
         <div className="hero-copy">
           <p className="eyebrow">ដោយក្តីស្រឡាញ់ និងកិត្តិយស</p>
           <ParallaxOrnament className="hero-ornament" />
+          {config.monogram?.showOnHero !== false && (
+            <SectionReveal distance={6}>
+              <WeddingMonogram
+                config={config}
+                size="sm"
+                variant="outline"
+                className="hero-monogram"
+              />
+            </SectionReveal>
+          )}
           <SectionReveal delay={0.08} distance={14}>
             <h1 className="hero-khmer">{config.title}</h1>
           </SectionReveal>
@@ -57,8 +72,24 @@ export function WeddingHero({ config }: { config: WeddingConfig }) {
           delay={0.28}
           distance={8}
           variant="photo"
+          style={
+            {
+              "--photo-ratio":
+                config.images.hero.width && config.images.hero.height
+                  ? config.images.hero.width / config.images.hero.height
+                  : 2 / 3,
+            } as CSSProperties
+          }
         >
-          <div className="hero-art-frame">
+          <div
+            className="hero-art-frame"
+            style={{
+              aspectRatio:
+                config.images.hero.width && config.images.hero.height
+                  ? `${config.images.hero.width} / ${config.images.hero.height}`
+                  : undefined,
+            }}
+          >
             <Image
               src={config.images.hero.src}
               alt={config.images.hero.alt}

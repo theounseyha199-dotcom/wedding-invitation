@@ -18,8 +18,14 @@ async function submitDemoRSVP(data: RSVP): Promise<{ localOnly: true }> {
   return { localOnly: true };
 }
 
-export function WeddingRSVP({ config }: { config: WeddingConfig }) {
-  const [name, setName] = useState("");
+export function WeddingRSVP({
+  config,
+  initialName = "",
+}: {
+  config: WeddingConfig;
+  initialName?: string;
+}) {
+  const [name, setName] = useState(initialName);
   const [attending, setAttending] = useState<"yes" | "no">("yes");
   const [guests, setGuests] = useState("1");
   const [message, setMessage] = useState("");

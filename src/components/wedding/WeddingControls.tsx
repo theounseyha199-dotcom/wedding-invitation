@@ -12,6 +12,7 @@ export function WeddingControls({ config }: { config: WeddingConfig }) {
   const [notice, setNotice] = useState("");
   const [pastHero, setPastHero] = useState(false);
   const [rsvpVisible, setRsvpVisible] = useState(false);
+  const [quietSectionVisible, setQuietSectionVisible] = useState(false);
   const audio = useRef<HTMLAudioElement>(null);
   const context = useRef<AudioContext | null>(null);
   const gain = useRef<GainNode | null>(null);
@@ -166,6 +167,14 @@ export function WeddingControls({ config }: { config: WeddingConfig }) {
           bounds && bounds.top < window.innerHeight - 48 && bounds.bottom > 48,
         ),
       );
+      setQuietSectionVisible(
+        ["invitation", "gallery", "closing"].some((id) => {
+          const page = document.getElementById(id);
+          if (!page) return false;
+          const rect = page.getBoundingClientRect();
+          return rect.top < window.innerHeight - 48 && rect.bottom > 48;
+        }),
+      );
     };
     update();
     window.addEventListener("scroll", update, { passive: true });
@@ -227,7 +236,7 @@ export function WeddingControls({ config }: { config: WeddingConfig }) {
           }}
         />
       )}
-      {pastHero && !rsvpVisible && (
+      {pastHero && !rsvpVisible && !quietSectionVisible && (
         <div className="floating-controls" aria-label="ឧបករណ៍ធៀបអញ្ជើញ">
           <button
             onClick={toggleMusic}
