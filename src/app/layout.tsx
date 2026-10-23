@@ -34,10 +34,25 @@ const latinSerif = Cormorant_Garamond({
   display: "swap",
 });
 
+const deploymentHost =
+  process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
+const deploymentUrl = deploymentHost
+  ? `https://${deploymentHost}`
+  : process.env.NODE_ENV === "production"
+    ? "https://wedding-invitation-three-jade.vercel.app"
+    : "http://localhost:3000";
+const configuredUrl = new URL(
+  process.env.NEXT_PUBLIC_SITE_URL || deploymentUrl,
+);
+// A copied local environment setting must never publish an unreachable image URL.
+const metadataBase =
+  process.env.NODE_ENV === "production" &&
+  ["localhost", "127.0.0.1", "[::1]"].includes(configuredUrl.hostname)
+    ? new URL(deploymentUrl)
+    : configuredUrl;
+
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000",
-  ),
+  metadataBase,
   title: `${weddingConfig.couple.groom.nameKh} & ${weddingConfig.couple.bride.nameKh} | ធៀបអញ្ជើញមង្គលការ${weddingConfig.sample ? " (គំរូ)" : ""}`,
   description: `${weddingConfig.title} — ${weddingConfig.dateLabel}។ ${weddingConfig.sample ? "នេះជាធៀបអញ្ជើញគំរូ មិនមែនជាកម្មវិធីពិតទេ។" : weddingConfig.wording.salutation}`,
   applicationName: weddingConfig.title,
