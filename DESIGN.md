@@ -383,7 +383,7 @@ Update the existing wedding icon assets to reflect:
 
 Maintain SVG, ICO, Apple touch icon, and Android manifest icon compatibility.
 
-Use the supplied `public/images/socail-share.png` unchanged for Open Graph and Twitter sharing previews, including personalized invitation links. `weddingShareImage` in `src/config/wedding.ts` owns its URL, native 2048 × 1152 dimensions, and alt text. Preserve the supplied filename. Explicit metadata uses this shared image; do not restore a generated `opengraph-image` route that would override it.
+Use the supplied `public/socail-share.png` unchanged, served at `/socail-share.png`, for Open Graph and Twitter sharing previews, including personalized invitation links. `weddingShareImage` in `src/config/wedding.ts` owns its URL, native 2048 × 1152 dimensions, and alt text. Preserve the supplied filename. Explicit metadata uses this shared image; do not restore a generated `opengraph-image` route that would override it.
 
 Do not remove the existing icon infrastructure.
 

@@ -55,7 +55,7 @@ try {
       assert.equal(tags.get("og:image:height"), "1152");
       imageURL = tags.get("og:image");
       assert.equal(tags.get("twitter:image"), imageURL);
-      assert.equal(new URL(imageURL).pathname, "/images/socail-share.png");
+      assert.equal(new URL(imageURL).pathname, "/socail-share.png");
       if (new URL(baseURL).protocol === "https:") {
         for (const url of [imageURL, tags.get("og:url")]) {
           assert.equal(new URL(url).protocol, "https:");
@@ -75,7 +75,7 @@ try {
   assert.equal(response.status(), 200);
   assert.match(response.headers()["content-type"], /^image\/png/);
   const expected = await readFile(
-    new URL("../public/images/socail-share.png", import.meta.url),
+    new URL("../public/socail-share.png", import.meta.url),
   );
   const digest = (bytes) => createHash("sha256").update(bytes).digest("hex");
   assert.equal(digest(await response.body()), digest(expected));
