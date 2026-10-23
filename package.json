@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit",
     "format": "prettier --write src README.md DESIGN.md scripts",
     "smoke": "node scripts/smoke.mjs",
+    "check:sharing": "node scripts/check-sharing.mjs",
     "check:upgrade": "node scripts/check-upgrade.mjs"
   },
   "dependencies": {

@@ -2,16 +2,37 @@ import type { Metadata } from "next";
 import { WeddingExperience } from "@/components/wedding/WeddingExperience";
 import { resolveWeddingGuest } from "@/lib/wedding-guests";
 import { weddingGuests } from "@/config/guests";
-import { weddingShareImage } from "@/config/wedding";
+import { weddingConfig, weddingShareImage } from "@/config/wedding";
 
-export const metadata: Metadata = {
-  robots: { index: false, follow: false },
-  openGraph: {
-    title: "លិខិតអញ្ជើញអាពាហ៍ពិពាហ៍",
-    description: "សូមគោរពអញ្ជើញចូលរួមអាពាហ៍ពិពាហ៍",
-    images: [weddingShareImage],
-  },
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const url = `/invite/${encodeURIComponent(slug)}`;
+  const title = "លិខិតអញ្ជើញអាពាហ៍ពិពាហ៍";
+  const description = "សូមគោរពអញ្ជើញចូលរួមអាពាហ៍ពិពាហ៍";
+  return {
+    robots: { index: false, follow: false },
+    alternates: { canonical: url },
+    openGraph: {
+      type: "website",
+      locale: "km_KH",
+      url,
+      siteName: weddingConfig.title,
+      title,
+      description,
+      images: [weddingShareImage],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [weddingShareImage],
+    },
+  };
+}
 
 // Guest resolution waits for the route parameter; the generated demo paths still prerender.
 export const instant = false;

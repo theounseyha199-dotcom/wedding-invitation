@@ -50,12 +50,17 @@ const metadataBase =
   ["localhost", "127.0.0.1", "[::1]"].includes(configuredUrl.hostname)
     ? new URL(deploymentUrl)
     : configuredUrl;
+const shareTitle = `${weddingConfig.couple.groom.nameKh} & ${weddingConfig.couple.bride.nameKh} · ${weddingConfig.title}`;
+const shareDescription = weddingConfig.sample
+  ? "ធៀបអញ្ជើញអាពាហ៍ពិពាហ៍គំរូ"
+  : weddingConfig.wording.salutation;
 
 export const metadata: Metadata = {
   metadataBase,
   title: `${weddingConfig.couple.groom.nameKh} & ${weddingConfig.couple.bride.nameKh} | ធៀបអញ្ជើញមង្គលការ${weddingConfig.sample ? " (គំរូ)" : ""}`,
   description: `${weddingConfig.title} — ${weddingConfig.dateLabel}។ ${weddingConfig.sample ? "នេះជាធៀបអញ្ជើញគំរូ មិនមែនជាកម្មវិធីពិតទេ។" : weddingConfig.wording.salutation}`,
   applicationName: weddingConfig.title,
+  alternates: { canonical: "/" },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -64,14 +69,16 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "km_KH",
-    title: `${weddingConfig.couple.groom.nameKh} & ${weddingConfig.couple.bride.nameKh} · ${weddingConfig.title}`,
-    description: weddingConfig.sample
-      ? "ធៀបអញ្ជើញអាពាហ៍ពិពាហ៍គំរូ"
-      : weddingConfig.wording.salutation,
+    url: "/",
+    siteName: weddingConfig.title,
+    title: shareTitle,
+    description: shareDescription,
     images: [weddingShareImage],
   },
   twitter: {
     card: "summary_large_image",
+    title: shareTitle,
+    description: shareDescription,
     images: [weddingShareImage],
   },
   robots: weddingConfig.sample ? { index: false, follow: false } : undefined,

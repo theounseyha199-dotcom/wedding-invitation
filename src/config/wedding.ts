@@ -188,6 +188,7 @@ export const weddingConfig: WeddingConfig = {
 
 export const weddingShareImage = {
   url: "/images/socail-share.png",
+  type: "image/png",
   width: 2048,
   height: 1152,
   alt: `${weddingConfig.couple.groom.nameEn} & ${weddingConfig.couple.bride.nameEn} — Wedding invitation`,

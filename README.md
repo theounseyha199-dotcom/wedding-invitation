@@ -27,6 +27,10 @@ The supplied `public/images/gallery/story2.png` is used in the hero and closing.
 
 Social sharing previews use `public/images/socail-share.png` for both the main invitation and personalized links, including Open Graph and Twitter cards. Its shared metadata is configured in `weddingShareImage` in `src/config/wedding.ts`. `NEXT_PUBLIC_SITE_URL` can explicitly set the public domain. Otherwise, metadata uses Vercel's production domain, its deployment domain, or the project's production URL as a final production fallback. Local development uses localhost; production ignores localhost overrides so sharing apps always receive a public image URL.
 
+Each invitation emits its own canonical URL and `og:url`, a title, description, site name, and PNG image metadata. `htmlLimitedBots: /.*/` keeps sharing tags in the initial HTML head for crawlers that do not run JavaScript. Personalized sharing metadata uses generic invitation copy and never includes a guest's name.
+
+Run `npm run check:sharing` against the local server, or set `SHARE_CHECK_URL=https://your-domain` to verify production. It checks both invitation routes with Telegram, Facebook, and browser user agents, requires the card metadata in the initial HTML head, and confirms the public PNG matches the supplied file.
+
 The bundled `public/audio/wedding-music.mp3` is configured in `src/config/wedding.ts` at 35% volume and loops. The envelope remains closed on every page load. Music starts only when the guest clicks its Open Invitation button, fades in, and can be paused or resumed from the existing floating control. Replace the audio file or change `audio.src`, `audio.volume`, and `features.music` in the configuration to customize it.
 
 Reception and ceremony venues are separate. A map link uses coordinates when provided, otherwise the configured address. Check final coordinates before sharing.

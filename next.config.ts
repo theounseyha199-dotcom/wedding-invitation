@@ -1,7 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Share crawlers must receive complete card metadata in the initial <head>.
+  htmlLimitedBots: /.*/,
   cacheComponents: true,
   partialPrefetching: true,
   reactCompiler: true,
