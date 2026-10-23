@@ -186,8 +186,11 @@ export const weddingConfig: WeddingConfig = {
   },
 };
 
+export const weddingSiteUrl =
+  "https://wedding-invitation-three-jade.vercel.app";
+
 export const weddingShareImage = {
-  url: "/socail-share.png",
+  url: `${weddingSiteUrl}/socail-share.png`,
   type: "image/png",
   width: 2048,
   height: 1152,

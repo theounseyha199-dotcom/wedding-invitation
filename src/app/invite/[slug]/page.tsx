@@ -2,7 +2,11 @@ import type { Metadata } from "next";
 import { WeddingExperience } from "@/components/wedding/WeddingExperience";
 import { resolveWeddingGuest } from "@/lib/wedding-guests";
 import { weddingGuests } from "@/config/guests";
-import { weddingConfig, weddingShareImage } from "@/config/wedding";
+import {
+  weddingConfig,
+  weddingShareImage,
+  weddingSiteUrl,
+} from "@/config/wedding";
 
 export async function generateMetadata({
   params,
@@ -10,7 +14,8 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const url = `/invite/${encodeURIComponent(slug)}`;
+  const url = new URL(`/invite/${encodeURIComponent(slug)}`, weddingSiteUrl)
+    .href;
   const title = "លិខិតអញ្ជើញអាពាហ៍ពិពាហ៍";
   const description = "សូមគោរពអញ្ជើញចូលរួមអាពាហ៍ពិពាហ៍";
   return {

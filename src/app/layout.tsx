@@ -5,7 +5,11 @@ import {
   Noto_Sans_Khmer,
   Noto_Serif_Khmer,
 } from "next/font/google";
-import { weddingConfig, weddingShareImage } from "@/config/wedding";
+import {
+  weddingConfig,
+  weddingShareImage,
+  weddingSiteUrl,
+} from "@/config/wedding";
 import "./globals.css";
 
 const khmerDisplay = localFont({
@@ -34,33 +38,15 @@ const latinSerif = Cormorant_Garamond({
   display: "swap",
 });
 
-const deploymentHost =
-  process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
-const deploymentUrl = deploymentHost
-  ? `https://${deploymentHost}`
-  : process.env.NODE_ENV === "production"
-    ? "https://wedding-invitation-three-jade.vercel.app"
-    : "http://localhost:3000";
-const configuredUrl = new URL(
-  process.env.NEXT_PUBLIC_SITE_URL || deploymentUrl,
-);
-// A copied local environment setting must never publish an unreachable image URL.
-const metadataBase =
-  process.env.NODE_ENV === "production" &&
-  ["localhost", "127.0.0.1", "[::1]"].includes(configuredUrl.hostname)
-    ? new URL(deploymentUrl)
-    : configuredUrl;
 const shareTitle = `${weddingConfig.couple.groom.nameKh} & ${weddingConfig.couple.bride.nameKh} · ${weddingConfig.title}`;
-const shareDescription = weddingConfig.sample
-  ? "ធៀបអញ្ជើញអាពាហ៍ពិពាហ៍គំរូ"
-  : weddingConfig.wording.salutation;
+const shareDescription = weddingConfig.wording.invitation;
 
 export const metadata: Metadata = {
-  metadataBase,
+  metadataBase: new URL(weddingSiteUrl),
   title: `${weddingConfig.couple.groom.nameKh} & ${weddingConfig.couple.bride.nameKh} | ធៀបអញ្ជើញមង្គលការ${weddingConfig.sample ? " (គំរូ)" : ""}`,
-  description: `${weddingConfig.title} — ${weddingConfig.dateLabel}។ ${weddingConfig.sample ? "នេះជាធៀបអញ្ជើញគំរូ មិនមែនជាកម្មវិធីពិតទេ។" : weddingConfig.wording.salutation}`,
+  description: shareDescription,
   applicationName: weddingConfig.title,
-  alternates: { canonical: "/" },
+  alternates: { canonical: weddingSiteUrl },
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -69,7 +55,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "km_KH",
-    url: "/",
+    url: weddingSiteUrl,
     siteName: weddingConfig.title,
     title: shareTitle,
     description: shareDescription,
