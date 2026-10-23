@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import { WeddingExperience } from "@/components/wedding/WeddingExperience";
 import { resolveWeddingGuest } from "@/lib/wedding-guests";
 import { weddingGuests } from "@/config/guests";
+import { weddingShareImage } from "@/config/wedding";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
   openGraph: {
     title: "លិខិតអញ្ជើញអាពាហ៍ពិពាហ៍",
     description: "សូមគោរពអញ្ជើញចូលរួមអាពាហ៍ពិពាហ៍",
+    images: [weddingShareImage],
   },
 };
 

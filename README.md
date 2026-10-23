@@ -25,7 +25,7 @@ Edit [`src/config/wedding.ts`](src/config/wedding.ts). The `WeddingConfig` type 
 
 The supplied `public/images/gallery/story2.png` is used in the hero and closing. The seven `story1.png` through `story7.png` photographs in that folder form a responsive gallery grid: one column on small phones, two on tablets, and three on desktop. Captions sit below their images, and photos retain their original proportions without cropping. Selecting a photo opens a full-screen lightbox with previous/next buttons, arrow-key navigation, a current/total counter, and Escape to close. These photos show different couples and remain labeled as examples. Replace the image paths, dimensions, `alt`, and captions in the config with photographs of the actual couple before publishing. Use appropriately sized local JPEG/WebP/AVIF images for production.
 
-Set `NEXT_PUBLIC_SITE_URL` to the final absolute site URL when deploying, so Open Graph image links resolve to the published domain.
+Social sharing previews use `public/images/socail-share.png` for both the main invitation and personalized links, including Open Graph and Twitter cards. Its shared metadata is configured in `weddingShareImage` in `src/config/wedding.ts`. Set `NEXT_PUBLIC_SITE_URL` to the final absolute site URL when deploying, so image links resolve to the published domain.
 
 The bundled `public/audio/wedding-music.mp3` is configured in `src/config/wedding.ts` at 35% volume and loops. The envelope remains closed on every page load. Music starts only when the guest clicks its Open Invitation button, fades in, and can be paused or resumed from the existing floating control. Replace the audio file or change `audio.src`, `audio.volume`, and `features.music` in the configuration to customize it.
 

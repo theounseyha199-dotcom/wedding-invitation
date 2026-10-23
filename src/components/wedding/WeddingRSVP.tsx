@@ -72,10 +72,6 @@ export function WeddingRSVP({
         <p className="eyebrow">YOUR PRESENCE IS OUR GIFT</p>
         <h2 className="section-title">សូមឆ្លើយតបការអញ្ជើញ</h2>
         <p>សូមប្រាប់យើងថាលោកអ្នកអាចចូលរួមអបអរថ្ងៃដ៏ពិសេសនេះបានឬទេ។</p>
-        <div className="rsvp-note">
-          ទម្រង់គំរូនេះបង្ហាញការបញ្ជាក់នៅលើឧបករណ៍របស់អ្នកប៉ុណ្ណោះ។
-          មិនមានទិន្នន័យត្រូវបានផ្ញើ ឬរក្សាទុកឡើយ។
-        </div>
       </SectionReveal>
       <SectionReveal className="rsvp-form-wrap" delay={0.12}>
         {done ? (

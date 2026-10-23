@@ -12,6 +12,7 @@ import { WeddingLocation } from "./WeddingLocation";
 import { WeddingRSVP } from "./WeddingRSVP";
 import { WeddingBlessing } from "./WeddingBlessing";
 import { WeddingControls } from "./WeddingControls";
+import { ScrollHearts } from "./ScrollHearts";
 
 export function WeddingExperience({ guest }: { guest?: WeddingGuest }) {
   return (
@@ -37,6 +38,7 @@ export function WeddingExperience({ guest }: { guest?: WeddingGuest }) {
       </main>
       <WeddingBlessing config={config} />
       <WeddingControls config={config} />
+      <ScrollHearts />
     </>
   );
 }

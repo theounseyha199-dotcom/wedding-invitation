@@ -99,16 +99,27 @@ try {
           scrollWidth: gallery.scrollWidth,
           clientWidth: gallery.clientWidth,
           imageFits: [...gallery.querySelectorAll("img")].every(
-            (image) => getComputedStyle(image).objectFit === "contain",
+            (image) => getComputedStyle(image).objectFit === "cover",
           ),
+          aspectRatio: getComputedStyle(gallery).aspectRatio,
+          circle: getComputedStyle(gallery.querySelector(".gallery-panel-7"))
+            .borderRadius,
+          panels: [...gallery.querySelectorAll(".gallery-tile")]
+            .slice(0, 6)
+            .every((panel) =>
+              getComputedStyle(panel).clipPath.startsWith("polygon("),
+            ),
         }));
       if (
-        galleryLayout.display !== "grid" ||
+        galleryLayout.display !== "block" ||
+        galleryLayout.aspectRatio !== "2 / 3" ||
+        galleryLayout.circle !== "50%" ||
+        !galleryLayout.panels ||
         galleryLayout.scrollWidth > galleryLayout.clientWidth + 1 ||
         !galleryLayout.imageFits
       )
         failures.push(
-          "Gallery was not a responsive grid with uncropped photos",
+          "Gallery was not a responsive collage with six shaped panels and a circular center",
         );
       for (const [index, image] of (
         await page.locator("#gallery img").all()
@@ -371,6 +382,70 @@ try {
       );
     await context.close();
   }
+
+  const heartContext = await browser.newContext({
+    viewport: { width: 390, height: 850 },
+    reducedMotion: "no-preference",
+  });
+  const heartPage = await heartContext.newPage();
+  await heartPage.goto(baseURL, { waitUntil: "networkidle" });
+  if (await heartPage.locator(".scroll-heart").count())
+    failures.push(
+      "Hearts appeared before opening and scrolling the invitation",
+    );
+  await heartPage.getByRole("button", { name: /បើកធៀប/ }).click();
+  await heartPage.locator(".envelope-overlay").waitFor({ state: "hidden" });
+  await heartPage.mouse.wheel(0, 350);
+  await heartPage.waitForFunction(
+    () => document.querySelectorAll(".scroll-heart").length > 0,
+    null,
+    { timeout: 3000 },
+  );
+  const heartLayer = await heartPage
+    .locator(".scroll-hearts")
+    .evaluate((layer) => ({
+      decorative: layer.getAttribute("aria-hidden") === "true",
+      pointerEvents: getComputedStyle(layer).pointerEvents,
+      count: layer.children.length,
+    }));
+  if (
+    !heartLayer.decorative ||
+    heartLayer.pointerEvents !== "none" ||
+    heartLayer.count > 8
+  )
+    failures.push(
+      "Scroll hearts were not bounded, decorative, and pointer-transparent",
+    );
+  await heartPage.waitForFunction(
+    () => document.querySelectorAll(".scroll-heart").length === 0,
+    null,
+    { timeout: 4000 },
+  );
+  await heartPage.emulateMedia({ reducedMotion: "reduce" });
+  await heartPage.mouse.wheel(0, 350);
+  await heartPage.waitForTimeout(200);
+  if (await heartPage.locator(".scroll-heart").count())
+    failures.push("Hearts appeared after reduced motion was enabled");
+  if (
+    (await heartPage
+      .locator(".scroll-hearts")
+      .evaluate((layer) => getComputedStyle(layer).display)) !== "none"
+  )
+    failures.push("Heart layer was visible with reduced motion");
+  await heartPage.emulateMedia({ reducedMotion: "no-preference" });
+  await heartPage.mouse.wheel(0, 350);
+  await heartPage.waitForFunction(
+    () => document.querySelectorAll(".scroll-heart").length > 0,
+    null,
+    { timeout: 3000 },
+  );
+  await heartPage.emulateMedia({ reducedMotion: "reduce" });
+  await heartPage.waitForFunction(
+    () => document.querySelectorAll(".scroll-heart").length === 0,
+    null,
+    { timeout: 1000 },
+  );
+  await heartContext.close();
 
   const missingAudioContext = await browser.newContext({
     viewport: { width: 390, height: 850 },

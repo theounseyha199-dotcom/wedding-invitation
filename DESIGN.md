@@ -28,7 +28,7 @@ The visual language combines:
 - Refined Khmer Kbach patterns
 - Delicate floral arrangements
 - Gentle butterfly animations
-- Uncropped wedding photography
+- Full wedding portraits, with geometric crops in gallery previews
 
 The result should evoke expensive, custom-made Cambodian wedding stationery.
 
@@ -43,6 +43,7 @@ Replace the previous royal red and purple palette with:
   --rose-gold: #be8f83;
   --warm-ivory: #fff7f2;
   --soft-pink: #eedce4;
+  --heart-pink: #df87a8;
   --dusty-mauve: #8c6a73;
   --deep-plum: #4e3a3a;
 
@@ -187,21 +188,30 @@ Do not overwrite the source asset without a backup.
 
 ### Couple Story
 
-- Soft pink or ivory background
-- Muted rose-gold floral details
-- Preserved uncropped portrait photography
-- Soft butterfly movement at the edges
+- A quiet ivory surface tinted with soft pink (`72% --warm-ivory`, remaining `--soft-pink`)
+- A restrained centered Khmer heading and the shared ornamental divider
+- A centered, uncropped portrait in an ivory mount with a fine rose-gold double frame and an offset blush backing
+- On desktop, the introduction and message flank the portrait, forming a three-part keepsake composition; avoid the former oversized portrait and dense text column
+- On tablets, the portrait sits beside two short prose blocks; on phones, show the portrait, introduction, and message in one column
+- Three dated milestones follow a continuous fine timeline: horizontal on desktop and tablet, vertical on phones
+- Use the Khmer serif for dates, with diamond markers and readable prose; no table-like ruled rows
+- Preserve story wording, chronology, natural photo proportions, and subtle decoration at the section edges
+
+`CoupleStory.tsx` owns the story content and semantic milestone list. The `.story-*` rules in `src/app/globals.css` own this layout and derive all colors from the existing palette. Use a maximum 320px portrait mount on desktop and 300px on phones. Story text remains at least 16px. Keep all photo captions and sample notices removed.
 
 ### Wedding Gallery
 
 - Warm ivory background
 - Deep-plum centered Khmer heading
 - Fine rose-gold divider
-- Elegant editorial photograph presentation
-- Captions beneath images
+- Seven-photo geometric collage matching the supplied reference: a broad top panel, four diagonal side panels, a broad bottom panel, and a circular center photo
+- Fine warm-ivory dividers between panels
+- Uncaptioned photographs, without sample-photo notices
 - Clickable photos with accessible full-screen lightbox navigation
 
-Use a responsive CSS grid: one column below 600px, two columns from 600–999px, and three columns from 1000px. Keep each photo’s native aspect ratio and captions beneath it; no cropping or automatic movement.
+Keep the collage at a 2:3 aspect ratio on phones, tablets, and desktop, with a maximum width of 1040px. The circular center photo is 32% of the collage width. `src/components/wedding/WeddingGallery.tsx` owns the panel markup and divider geometry; `.gallery-panel-*` and `.gallery-seams` in `src/app/globals.css` own the matching clip paths and responsive seams. Each photo remains an independent semantic button, and the whole collage reveals as one composition.
+
+The supplied collage reference explicitly replaces the former staggered album layout and permits `object-fit: cover` and geometric clipping for gallery previews. Tune preview focal points to retain faces. Keep the original files and configured source dimensions unchanged, and show complete, uncropped images in the lightbox. Omit per-photo captions, decorative numbering, and sample-photo notices throughout the hero, story, gallery, and closing, as requested. Keep the lightbox’s current/total indicator. Use existing warm-ivory, plum, pink, and rose-gold tokens for dividers, interaction states, and the center expand indicator.
 
 ### Wedding Ceremony
 
@@ -221,6 +231,8 @@ RSVP remains a local-only interaction.
 
 Never state that form data was transmitted.
 
+Omit the introductory demo-storage paragraph at the user's request. Preserve the form's existing local-only behavior and accurate confirmation after submission.
+
 ### Cinematic Closing
 
 - Deep-plum background
@@ -238,12 +250,12 @@ Preserve the configured source image dimensions in `src/config/wedding.ts`.
 
 - Use `story2.png` for the hero and closing (the former `scene1.png` photo).
 - Use all seven supplied `public/images/gallery/story1.png` through `story7.png` photos in the gallery, with their actual intrinsic dimensions.
-- Keep all source photo aspect ratios.
-- Use `object-fit: contain`.
-- Do not crop faces or clothing.
-- Do not force uniform image heights.
+- Keep all source photo aspect ratios outside the geometric gallery previews.
+- Use `object-fit: contain` outside the gallery previews and in the lightbox; the collage previews use `object-fit: cover`.
+- Preserve full faces and clothing outside gallery previews. In the collage, tune focal points to keep faces visible; the lightbox always reveals the complete photo.
+- Do not force uniform image heights outside the reference-driven gallery collage.
 - Maintain the lightbox's full-image visibility.
-- Preserve the disclosure that the current photos are examples.
+- Omit visible sample-photo captions and notices at the user's request. Retain descriptive image alt text.
 
 Do not introduce unrelated stock couple photography.
 
@@ -261,6 +273,8 @@ Use the same monogram across:
 - Cinematic closing
 
 Maintain the Khmer Kbach ornamental system.
+
+The shared `GoldDivider` uses `public/images/khmer/style.png` at the user's request. `.gold-divider-art` crops the source's transparent canvas through a CSS mask and tints the artwork with `currentColor`, inherited from `--ornament`. Preserve the PNG source. Keep existing reveal and parallax behavior around this shared divider.
 
 Paper texture remains subtle and limited to appropriate editorial sections.
 
@@ -313,6 +327,10 @@ Keep their flight paths at the outer section edges.
 
 Pause flight while sections are offscreen.
 
+### Hearts on Scroll
+
+At the user's request, scrolling releases a restrained pair of small pink hearts along the viewport margins. `ScrollHearts.tsx` owns the effect; `.scroll-heart*` in `globals.css` uses the decorative `--heart-pink: #df87a8` token for both sides, as explicitly requested. Hearts rise gently and disappear within 2.8 seconds, with at least 450ms between bursts and no more than eight hearts mounted. Keep the layer decorative, hidden from assistive technology, and unable to intercept pointer input. No new hearts appear while the envelope or lightbox is open, a form control is focused, or the document is hidden. Clear hearts when the page is hidden. Disable the effect for reduced motion, including changes to that preference during a visit. Keep hearts at the outer margins, clear of invitation text, photographs, and controls; no continuous particle loop.
+
 ### Parallax
 
 Preserve the existing nine-pixel hero ornament movement.
@@ -323,8 +341,8 @@ Avoid introducing additional dramatic parallax.
 
 Maintain:
 
-- A static responsive grid of all seven configured photographs
-- Natural image proportions and captions beneath each photo
+- A static responsive geometric collage of all seven configured photographs
+- Shaped photo previews without per-photo captions, with complete images in the lightbox
 - Keyboard-accessible photo buttons
 - Full-screen lightbox rendered outside the page layout
 - Previous/next controls and a current/total indicator inside the lightbox
@@ -338,6 +356,7 @@ Preserve all accessibility fallbacks.
 Reduced-motion preference must disable:
 
 - Butterfly flight
+- Scroll-triggered hearts
 - Decorative travel animations
 - Parallax
 - Smooth scrolling
@@ -364,7 +383,7 @@ Update the existing wedding icon assets to reflect:
 
 Maintain SVG, ICO, Apple touch icon, and Android manifest icon compatibility.
 
-Update the Open Graph image using the new visual identity.
+Use the supplied `public/images/socail-share.png` unchanged for Open Graph and Twitter sharing previews, including personalized invitation links. `weddingShareImage` in `src/config/wedding.ts` owns its URL, native 2048 × 1152 dimensions, and alt text. Preserve the supplied filename. Explicit metadata uses this shared image; do not restore a generated `opengraph-image` route that would override it.
 
 Do not remove the existing icon infrastructure.
 
@@ -377,7 +396,7 @@ Preserve:
 - Responsive Khmer typography
 - Stacked hero layout
 - Natural photograph proportions
-- Responsive photo grid with full-image lightbox
+- Responsive geometric photo collage with full-image lightbox
 - Two-column ceremony number/content rhythm
 - Accessible RSVP form
 - Horizontal floating controls
@@ -396,7 +415,7 @@ Avoid:
 - Excessive shadow effects
 - Glitter and decorative particle explosions
 - Random wedding photography
-- Cropped wedding portraits
+- Cropped wedding portraits outside the explicitly requested gallery collage previews
 - Heavy floral overlays
 - Excessive butterfly movement
 - Fake Khmer lunar dates
@@ -426,6 +445,7 @@ Do not rebuild components that already work.
 Do not add dependencies unless clearly justified.
 
 ## Final Goal
+2
 
 Create a luxurious **Rose Gold & Ivory Khmer Digital Wedding Invitation**.
 

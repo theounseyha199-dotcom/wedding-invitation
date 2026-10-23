@@ -98,10 +98,6 @@ export function WeddingHero({ config }: { config: WeddingConfig }) {
               sizes="(max-width: 800px) 86vw, 43vw"
             />
           </div>
-          <div className="hero-art-caption">
-            <span>01 / AN INVITATION TO CELEBRATE</span>
-            <span>{config.images.hero.caption}</span>
-          </div>
         </SectionReveal>
       </div>
       <div className="hero-bottomline">

@@ -28,11 +28,6 @@ export function WeddingBlessing({ config }: { config: WeddingConfig }) {
               fill
               sizes="(max-width: 700px) 84vw, 38vw"
             />
-            {config.sample && (
-              <span className="closing-photo-caption">
-                {config.images.hero.caption}
-              </span>
-            )}
           </SectionReveal>
           <div className="closing-copy">
             <SectionReveal distance={8}>

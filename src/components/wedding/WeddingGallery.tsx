@@ -2,7 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { createPortal } from "react-dom";
-import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, ChevronLeft, ChevronRight, Expand } from "lucide-react";
 import type { WeddingConfig } from "@/types/wedding";
 import { SectionReveal } from "@/components/ui/SectionReveal";
 import { FlyingButterflies } from "./FlyingButterflies";
@@ -15,7 +15,12 @@ export function WeddingGallery({ config }: { config: WeddingConfig }) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
-  const total = config.images.gallery.length;
+  // Match each portrait to a panel whose diagonal clears the couple's faces.
+  const photos =
+    config.images.gallery.length === 7
+      ? [0, 2, 6, 3, 4, 5, 1].map((index) => config.images.gallery[index])
+      : config.images.gallery;
+  const total = photos.length;
   const lightboxOpen = active !== null;
 
   useEffect(() => {
@@ -34,18 +39,11 @@ export function WeddingGallery({ config }: { config: WeddingConfig }) {
       if (event.key === "Escape") setActive(null);
       if (event.key === "ArrowRight") {
         event.preventDefault();
-        setActive((v) =>
-          v === null ? null : (v + 1) % config.images.gallery.length,
-        );
+        setActive((v) => (v === null ? null : (v + 1) % total));
       }
       if (event.key === "ArrowLeft") {
         event.preventDefault();
-        setActive((v) =>
-          v === null
-            ? null
-            : (v - 1 + config.images.gallery.length) %
-              config.images.gallery.length,
-        );
+        setActive((v) => (v === null ? null : (v - 1 + total) % total));
       }
       if (event.key === "Tab") {
         const buttons =
@@ -73,7 +71,7 @@ export function WeddingGallery({ config }: { config: WeddingConfig }) {
       });
       triggerRef.current?.focus();
     };
-  }, [lightboxOpen, config.images.gallery.length]);
+  }, [lightboxOpen, total]);
   return (
     <section
       id="gallery"
@@ -97,54 +95,47 @@ export function WeddingGallery({ config }: { config: WeddingConfig }) {
           </p>
         </SectionReveal>
       </div>
-      <div className="gallery-grid">
-        {config.images.gallery.map((photo, index) => (
-          <SectionReveal
-            className={`gallery-reveal gallery-reveal-${index + 1}`}
+      <SectionReveal className="gallery-grid" distance={8} variant="photo">
+        {photos.map((photo, index) => (
+          <button
+            type="button"
+            className={`gallery-tile gallery-panel-${index + 1} gallery-reveal-${index + 1}`}
             key={photo.src}
-            delay={Math.min(index * 0.1, 0.3)}
-            distance={8}
-            variant="photo"
+            onClick={(event) => {
+              triggerRef.current = event.currentTarget;
+              setActive(index);
+            }}
+            aria-label={`បើករូបភាពទី ${index + 1}`}
           >
-            <figure className="gallery-figure">
-              <button
-                type="button"
-                className={`gallery-tile gallery-tile-${index + 1}`}
-                style={{
-                  aspectRatio:
-                    photo.width && photo.height
-                      ? `${photo.width} / ${photo.height}`
-                      : undefined,
-                }}
-                onClick={(event) => {
-                  triggerRef.current = event.currentTarget;
-                  setActive(index);
-                }}
-                aria-label={`បើករូបភាពទី ${index + 1}: ${photo.caption}`}
-              >
-                <Image
-                  src={photo.src}
-                  alt={photo.alt}
-                  fill
-                  sizes="(max-width: 599px) calc(100vw - 44px), (max-width: 999px) 45vw, 33vw"
-                />
-              </button>
-              <figcaption className="gallery-caption">
-                <span className="gallery-caption-number">
-                  {numberLabel(index)}
-                </span>
-                <span className="gallery-caption-text">{photo.caption}</span>
-              </figcaption>
-            </figure>
-          </SectionReveal>
+            <Image
+              src={photo.src}
+              alt={photo.alt}
+              fill
+              sizes={
+                index === 0 || index === 5
+                  ? "(max-width: 1090px) 95vw, 1040px"
+                  : "(max-width: 1090px) 48vw, 520px"
+              }
+            />
+            {index === 6 && (
+              <span className="gallery-expand" aria-hidden="true">
+                <Expand size={16} strokeWidth={1.5} />
+              </span>
+            )}
+          </button>
         ))}
-      </div>
-      {config.sample && (
-        <p className="gallery-note">
-          រូបថតគំរូបង្ហាញគូផ្សេងៗគ្នា —
-          សូមដាក់រូបភាពគូស្វាមីភរិយាពិតមុនចែករំលែកធៀប។
-        </p>
-      )}
+        <svg
+          className="gallery-seams"
+          viewBox="0 0 1200 1800"
+          fill="none"
+          aria-hidden="true"
+        >
+          <path
+            d="M0 162 600 600 1200 162M600 600V1200M0 900H1200M0 1638 600 1200 1200 1638"
+            vectorEffect="non-scaling-stroke"
+          />
+        </svg>
+      </SectionReveal>
       {active !== null &&
         createPortal(
           <div
@@ -170,12 +161,7 @@ export function WeddingGallery({ config }: { config: WeddingConfig }) {
               type="button"
               disabled={total < 2}
               className="lightbox-arrow"
-              onClick={() =>
-                setActive(
-                  (active - 1 + config.images.gallery.length) %
-                    config.images.gallery.length,
-                )
-              }
+              onClick={() => setActive((active - 1 + total) % total)}
               aria-label="រូបភាពមុន"
             >
               <ChevronLeft />
@@ -183,14 +169,13 @@ export function WeddingGallery({ config }: { config: WeddingConfig }) {
             <div className="lightbox-content">
               <div className="lightbox-image">
                 <Image
-                  src={config.images.gallery[active].src}
-                  alt={config.images.gallery[active].alt}
+                  src={photos[active].src}
+                  alt={photos[active].alt}
                   fill
                   sizes="90vw"
                 />
               </div>
               <div className="lightbox-meta">
-                <p>{config.images.gallery[active].caption}</p>
                 <span
                   aria-live="polite"
                   aria-label={`រូបភាពទី ${active + 1} ក្នុងចំណោម ${total}`}
@@ -203,9 +188,7 @@ export function WeddingGallery({ config }: { config: WeddingConfig }) {
               type="button"
               disabled={total < 2}
               className="lightbox-arrow"
-              onClick={() =>
-                setActive((active + 1) % config.images.gallery.length)
-              }
+              onClick={() => setActive((active + 1) % total)}
               aria-label="រូបភាពបន្ទាប់"
             >
               <ChevronRight />

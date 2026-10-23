@@ -5,7 +5,7 @@ import {
   Noto_Sans_Khmer,
   Noto_Serif_Khmer,
 } from "next/font/google";
-import { weddingConfig } from "@/config/wedding";
+import { weddingConfig, weddingShareImage } from "@/config/wedding";
 import "./globals.css";
 
 const khmerDisplay = localFont({
@@ -53,6 +53,11 @@ export const metadata: Metadata = {
     description: weddingConfig.sample
       ? "ធៀបអញ្ជើញអាពាហ៍ពិពាហ៍គំរូ"
       : weddingConfig.wording.salutation,
+    images: [weddingShareImage],
+  },
+  twitter: {
+    card: "summary_large_image",
+    images: [weddingShareImage],
   },
   robots: weddingConfig.sample ? { index: false, follow: false } : undefined,
 };
