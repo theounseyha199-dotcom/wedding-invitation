@@ -196,3 +196,11 @@ export const weddingShareImage = {
   height: 1152,
   alt: `${weddingConfig.couple.groom.nameEn} & ${weddingConfig.couple.bride.nameEn} — Wedding invitation`,
 };
+
+export const weddingSeo = {
+  // Homepage indexing was explicitly approved; guest invitations remain noindex.
+  indexHomepage: true,
+  title: `${weddingConfig.couple.groom.nameKh} & ${weddingConfig.couple.bride.nameKh} | ${weddingConfig.title}`,
+  description: `${weddingConfig.wording.salutation}ចូលរួមពិធីមង្គលការរបស់ ${weddingConfig.couple.groom.nameKh} និង ${weddingConfig.couple.bride.nameKh}។`,
+  language: "km-KH",
+};

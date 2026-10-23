@@ -19,7 +19,13 @@ export async function generateMetadata({
   const title = "លិខិតអញ្ជើញអាពាហ៍ពិពាហ៍";
   const description = "សូមគោរពអញ្ជើញចូលរួមអាពាហ៍ពិពាហ៍";
   return {
-    robots: { index: false, follow: false },
+    title,
+    description,
+    robots: {
+      index: false,
+      follow: false,
+      googleBot: { index: false, follow: false },
+    },
     alternates: { canonical: url },
     openGraph: {
       type: "website",

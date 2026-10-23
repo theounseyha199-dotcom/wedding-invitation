@@ -7,6 +7,7 @@ import {
 } from "next/font/google";
 import {
   weddingConfig,
+  weddingSeo,
   weddingShareImage,
   weddingSiteUrl,
 } from "@/config/wedding";
@@ -38,13 +39,10 @@ const latinSerif = Cormorant_Garamond({
   display: "swap",
 });
 
-const shareTitle = `${weddingConfig.couple.groom.nameKh} & ${weddingConfig.couple.bride.nameKh} · ${weddingConfig.title}`;
-const shareDescription = weddingConfig.wording.invitation;
-
 export const metadata: Metadata = {
   metadataBase: new URL(weddingSiteUrl),
-  title: `${weddingConfig.couple.groom.nameKh} & ${weddingConfig.couple.bride.nameKh} | ធៀបអញ្ជើញមង្គលការ${weddingConfig.sample ? " (គំរូ)" : ""}`,
-  description: shareDescription,
+  title: weddingSeo.title,
+  description: weddingSeo.description,
   applicationName: weddingConfig.title,
   alternates: { canonical: weddingSiteUrl },
   appleWebApp: {
@@ -57,17 +55,28 @@ export const metadata: Metadata = {
     locale: "km_KH",
     url: weddingSiteUrl,
     siteName: weddingConfig.title,
-    title: shareTitle,
-    description: shareDescription,
+    title: weddingSeo.title,
+    description: weddingSeo.description,
     images: [weddingShareImage],
   },
   twitter: {
     card: "summary_large_image",
-    title: shareTitle,
-    description: shareDescription,
+    title: weddingSeo.title,
+    description: weddingSeo.description,
     images: [weddingShareImage],
   },
-  robots: weddingConfig.sample ? { index: false, follow: false } : undefined,
+  robots: {
+    index: weddingSeo.indexHomepage,
+    follow: true,
+    googleBot: {
+      index: weddingSeo.indexHomepage,
+      follow: true,
+      "max-image-preview": "large",
+    },
+  },
+  verification: process.env.GOOGLE_SITE_VERIFICATION
+    ? { google: process.env.GOOGLE_SITE_VERIFICATION }
+    : undefined,
 };
 
 export const viewport: Viewport = {
