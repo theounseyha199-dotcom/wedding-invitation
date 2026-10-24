@@ -190,7 +190,7 @@ export const weddingSiteUrl =
   "https://wedding-invitation-three-jade.vercel.app";
 
 export const weddingShareImage = {
-  url: `${weddingSiteUrl}/socail-share.png`,
+  url: `${weddingSiteUrl}/thumnail.png`,
   type: "image/png",
   width: 2048,
   height: 1152,

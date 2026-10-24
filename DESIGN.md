@@ -28,7 +28,7 @@ The visual language combines:
 - Refined Khmer Kbach patterns
 - Delicate floral arrangements
 - Gentle butterfly animations
-- Full wedding portraits, with geometric crops in gallery previews
+- Full, uncropped wedding portraits in the keepsake album
 
 The result should evoke expensive, custom-made Cambodian wedding stationery.
 
@@ -201,17 +201,11 @@ Do not overwrite the source asset without a backup.
 
 ### Wedding Gallery
 
-- Warm ivory background
-- Deep-plum centered Khmer heading
-- Fine rose-gold divider
-- Seven-photo geometric collage matching the supplied reference: a broad top panel, four diagonal side panels, a broad bottom panel, and a circular center photo
-- Fine warm-ivory dividers between panels
-- Uncaptioned photographs, without sample-photo notices
-- Clickable photos with accessible full-screen lightbox navigation
+The approved keepsake album replaces the geometric collage. Use an olive `#34401c` background, gold `#e3c477` ornament, cream `#fff0c5` headings, and the existing ivory photograph mount. `.gallery-section` scopes these tokens. One centered portrait, up to 460px wide, sits inside a fine double gold frame; subtle botanical pattern and side ornaments connect it to the cover. Keep the expand label below the photograph, never over faces or clothing.
 
-Keep the collage at a 2:3 aspect ratio on phones, tablets, and desktop, with a maximum width of 1040px. The circular center photo is 32% of the collage width. `src/components/wedding/WeddingGallery.tsx` owns the panel markup and divider geometry; `.gallery-panel-*` and `.gallery-seams` in `src/app/globals.css` own the matching clip paths and responsive seams. Each photo remains an independent semantic button, and the whole collage reveals as one composition.
+Display all seven configured photographs in their original order. Every preview, thumbnail, and full-screen image uses `object-fit: contain`. The selected portrait crossfades in a stable 2:3 stage, with no autoplay; reduced motion removes the transition. Use previous/next native buttons, a current/total indicator, and a horizontally scrollable thumbnail strip with `aria-pressed` selection. Swiping horizontally on the portrait changes photos without opening the lightbox; vertical gestures retain normal page scrolling. Arrow keys work when the portrait is focused. Preserve the existing full-screen viewer, Escape, arrow navigation, focus trap, background inertness, and focus restoration.
 
-The supplied collage reference explicitly replaces the former staggered album layout and permits `object-fit: cover` and geometric clipping for gallery previews. Tune preview focal points to retain faces. Keep the original files and configured source dimensions unchanged, and show complete, uncropped images in the lightbox. Omit per-photo captions, decorative numbering, and sample-photo notices throughout the hero, story, gallery, and closing, as requested. Keep the lightbox’s current/total indicator. Use existing warm-ivory, plum, pink, and rose-gold tokens for dividers, interaction states, and the center expand indicator.
+`WeddingGallery.tsx` owns selection and lightbox state; `.album-*` rules own layout. Mobile uses a full-width portrait and scrollable thumbnails. Keep captions and sample notices omitted. Hide the entire section if no photos are configured; disable previous/next controls for a single photo.
 
 ### Wedding Ceremony
 
@@ -250,10 +244,10 @@ Preserve the configured source image dimensions in `src/config/wedding.ts`.
 
 - Use `story2.png` for the hero and closing (the former `scene1.png` photo).
 - Use all seven supplied `public/images/gallery/story1.png` through `story7.png` photos in the gallery, with their actual intrinsic dimensions.
-- Keep all source photo aspect ratios outside the geometric gallery previews.
-- Use `object-fit: contain` outside the gallery previews and in the lightbox; the collage previews use `object-fit: cover`.
-- Preserve full faces and clothing outside gallery previews. In the collage, tune focal points to keep faces visible; the lightbox always reveals the complete photo.
-- Do not force uniform image heights outside the reference-driven gallery collage.
+- Keep all source photo aspect ratios throughout the gallery.
+- Use `object-fit: contain` in all gallery previews and in the lightbox.
+- Preserve full faces and clothing in every gallery preview, thumbnail, and lightbox image.
+- Use a stable album stage with contained images; preserve natural photo proportions elsewhere.
 - Maintain the lightbox's full-image visibility.
 - Omit visible sample-photo captions and notices at the user's request. Retain descriptive image alt text.
 
@@ -341,8 +335,8 @@ Avoid introducing additional dramatic parallax.
 
 Maintain:
 
-- A static responsive geometric collage of all seven configured photographs
-- Shaped photo previews without per-photo captions, with complete images in the lightbox
+- A responsive album of all seven configured photographs
+- Uncropped previews and thumbnails without per-photo captions, with complete images in the lightbox
 - Keyboard-accessible photo buttons
 - Full-screen lightbox rendered outside the page layout
 - Previous/next controls and a current/total indicator inside the lightbox
@@ -383,7 +377,7 @@ Update the existing wedding icon assets to reflect:
 
 Maintain SVG, ICO, Apple touch icon, and Android manifest icon compatibility.
 
-Use the supplied `public/socail-share.png` unchanged, served at `/socail-share.png`, for Open Graph and Twitter sharing previews, including personalized invitation links. `weddingShareImage` in `src/config/wedding.ts` owns its URL, native 2048 × 1152 dimensions, and alt text. Preserve the supplied filename. Explicit metadata uses this shared image; do not restore a generated `opengraph-image` route that would override it.
+Use the supplied `public/thumnail.png` unchanged, served at `/thumnail.png`, for Open Graph and Twitter sharing previews, including personalized invitation links. `weddingShareImage` in `src/config/wedding.ts` owns its URL, native 2048 × 1152 dimensions, and alt text. Preserve the supplied filename. Explicit metadata uses this shared image; do not restore a generated `opengraph-image` route that would override it.
 
 Do not remove the existing icon infrastructure.
 
@@ -396,7 +390,7 @@ Preserve:
 - Responsive Khmer typography
 - Stacked hero layout
 - Natural photograph proportions
-- Responsive geometric photo collage with full-image lightbox
+- Responsive portrait album with full-image lightbox
 - Two-column ceremony number/content rhythm
 - Accessible RSVP form
 - Horizontal floating controls
@@ -415,7 +409,7 @@ Avoid:
 - Excessive shadow effects
 - Glitter and decorative particle explosions
 - Random wedding photography
-- Cropped wedding portraits outside the explicitly requested gallery collage previews
+- Cropped wedding portraits
 - Heavy floral overlays
 - Excessive butterfly movement
 - Fake Khmer lunar dates
@@ -445,7 +439,6 @@ Do not rebuild components that already work.
 Do not add dependencies unless clearly justified.
 
 ## Final Goal
-2
 
 Create a luxurious **Rose Gold & Ivory Khmer Digital Wedding Invitation**.
 
@@ -454,3 +447,17 @@ The finished experience should feel like opening an expensive, romantic Cambodia
 The result must be elegant, culturally respectful, beautifully composed, mobile-first, and fully compatible with all existing features.
 
 Implement the new design system throughout the existing website without redesigning its information architecture or introducing functionality regressions.
+
+### Olive and gold reference cover
+
+The user's olive-and-gold Khmer invitation reference supersedes the blush envelope direction for the opening cover only. `.envelope-overlay` scopes cover tokens: olive `#34401c`, deep olive `#202a12`, gold `#e3c477`, and cream `#fff0c5`. The album also uses olive and gold as documented above; other sections retain their established palette. Use a full-height mobile cover and a centered 460px desktop panel, subtle repeating botanical linework, the original gold Khmer corner artwork, and a central outlined crest with the configured couple initials. Khmer names lead; English names remain secondary. A solid gold native button opens the invitation and starts the existing shared audio. Fade and gently enlarge the cover on opening; no paper flap in this reference direction. Preserve keyboard focus transfer, background inertness, short-screen scrolling, and reduced-motion behavior.
+
+Omit the sample notice from the opening cover, as explicitly requested.
+
+### Wedding gift QR
+
+`WeddingGift.tsx` presents the user-supplied `/qr.png` after RSVP, with the visible recipient SEYHA THEOUN, an original-image download, and a full-size image link. Preserve all source pixels, aspect ratio, and QR quiet zones: no recoloring, cropping, image optimization, or overlaid ornament. Use the invitation's existing ivory, pink, and plum tokens. Stack the copy and QR on phones; use two columns on desktop. Hide floating controls over this section. This is a static gift payment image, not payment processing or confirmation; never imply the site verifies a transfer.
+
+### Stationery opening choreography
+
+Use one-time motion under `prefers-reduced-motion: no-preference`: cover text settles upward by 9px with a short stagger, the two crest outlines draw over 1.8 seconds, and one soft gold highlight crosses the opening button. After the overlay leaves, the hero photograph gently settles into place and its supporting copy appears. Pause the hero's CSS entrance while the cover is mounted. Keep initial text readable, preserve keyboard focus and clickable controls throughout, and add no looping particles or perpetual gleam. The gift QR panel remains completely static, outside the section reveal wrapper, to make scanning reliable. Existing scroll hearts and butterflies retain their current limits.

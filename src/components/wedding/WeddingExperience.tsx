@@ -1,6 +1,7 @@
 import { weddingConfig as config } from "@/config/wedding";
 import type { WeddingGuest } from "@/config/guests";
 import { formatGuestName } from "@/lib/wedding-guests";
+import { WeddingGift } from "./WeddingGift";
 import { WeddingEnvelope } from "./WeddingEnvelope";
 import { WeddingHero } from "./WeddingHero";
 import { InvitationLetter } from "./InvitationLetter";
@@ -35,6 +36,7 @@ export function WeddingExperience({ guest }: { guest?: WeddingGuest }) {
             initialName={guest ? formatGuestName(guest) : ""}
           />
         )}
+        <WeddingGift />
       </main>
       <WeddingBlessing config={config} />
       <WeddingControls config={config} />

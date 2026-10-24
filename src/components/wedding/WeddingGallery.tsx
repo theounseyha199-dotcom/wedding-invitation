@@ -15,13 +15,27 @@ export function WeddingGallery({ config }: { config: WeddingConfig }) {
   const closeRef = useRef<HTMLButtonElement>(null);
   const dialogRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
-  // Match each portrait to a panel whose diagonal clears the couple's faces.
-  const photos =
-    config.images.gallery.length === 7
-      ? [0, 2, 6, 3, 4, 5, 1].map((index) => config.images.gallery[index])
-      : config.images.gallery;
+  const [selected, setSelected] = useState(0);
+  const thumbnailsRef = useRef<HTMLDivElement>(null);
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const swiped = useRef(false);
+  const photos = config.images.gallery;
   const total = photos.length;
   const lightboxOpen = active !== null;
+
+  useEffect(() => {
+    const strip = thumbnailsRef.current;
+    const thumbnail = strip?.children[selected] as HTMLElement | undefined;
+    if (strip && thumbnail) {
+      strip.scrollTo({
+        left:
+          thumbnail.offsetLeft -
+          strip.clientWidth / 2 +
+          thumbnail.clientWidth / 2,
+        behavior: "instant",
+      });
+    }
+  }, [selected]);
 
   useEffect(() => {
     if (!lightboxOpen) return;
@@ -72,6 +86,7 @@ export function WeddingGallery({ config }: { config: WeddingConfig }) {
       triggerRef.current?.focus();
     };
   }, [lightboxOpen, total]);
+  if (!total) return null;
   return (
     <section
       id="gallery"
@@ -95,47 +110,136 @@ export function WeddingGallery({ config }: { config: WeddingConfig }) {
           </p>
         </SectionReveal>
       </div>
-      <SectionReveal className="gallery-grid" distance={8} variant="photo">
-        {photos.map((photo, index) => (
+      <div className="album" role="group" aria-label="អាល់ប៊ុមរូបភាព">
+        <div className="album-stage">
+          <span
+            className="album-flourish album-flourish-left"
+            aria-hidden="true"
+          />
+          <span
+            className="album-flourish album-flourish-right"
+            aria-hidden="true"
+          />
           <button
             type="button"
-            className={`gallery-tile gallery-panel-${index + 1} gallery-reveal-${index + 1}`}
-            key={photo.src}
+            className="album-portrait"
+            aria-label={`បើករូបភាពទី ${selected + 1} ពេញអេក្រង់`}
             onClick={(event) => {
-              triggerRef.current = event.currentTarget;
-              setActive(index);
-            }}
-            aria-label={`បើករូបភាពទី ${index + 1}`}
-          >
-            <Image
-              src={photo.src}
-              alt={photo.alt}
-              fill
-              sizes={
-                index === 0 || index === 5
-                  ? "(max-width: 1090px) 95vw, 1040px"
-                  : "(max-width: 1090px) 48vw, 520px"
+              if (swiped.current) {
+                swiped.current = false;
+                return;
               }
-            />
-            {index === 6 && (
-              <span className="gallery-expand" aria-hidden="true">
-                <Expand size={16} strokeWidth={1.5} />
-              </span>
-            )}
+              triggerRef.current = event.currentTarget;
+              setActive(selected);
+            }}
+            onKeyDown={(event) => {
+              if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+                event.preventDefault();
+                setSelected(
+                  (value) =>
+                    (value + (event.key === "ArrowRight" ? 1 : -1) + total) %
+                    total,
+                );
+              }
+            }}
+            onTouchStart={(event) => {
+              swiped.current = false;
+              touchStart.current = {
+                x: event.touches[0].clientX,
+                y: event.touches[0].clientY,
+              };
+            }}
+            onTouchCancel={() => {
+              touchStart.current = null;
+            }}
+            onTouchEnd={(event) => {
+              if (!touchStart.current) return;
+              const dx = event.changedTouches[0].clientX - touchStart.current.x;
+              const dy = event.changedTouches[0].clientY - touchStart.current.y;
+              touchStart.current = null;
+              if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+                swiped.current = true;
+                setSelected(
+                  (value) => (value + (dx < 0 ? 1 : -1) + total) % total,
+                );
+              }
+            }}
+          >
+            <span className="album-photo-stack">
+              {photos.map((photo, index) => (
+                <Image
+                  key={photo.src}
+                  src={photo.src}
+                  alt={index === selected ? photo.alt : ""}
+                  aria-hidden={index !== selected}
+                  fill
+                  className={`album-photo${index === selected ? " is-selected" : ""}`}
+                  sizes="(max-width: 600px) 85vw, 460px"
+                  draggable={false}
+                />
+              ))}
+            </span>
+            <span className="album-expand">
+              <Expand size={16} aria-hidden="true" /> មើលពេញអេក្រង់
+            </span>
           </button>
-        ))}
-        <svg
-          className="gallery-seams"
-          viewBox="0 0 1200 1800"
-          fill="none"
-          aria-hidden="true"
+        </div>
+        <div className="album-navigation">
+          <button
+            type="button"
+            className="album-arrow"
+            disabled={total < 2}
+            onClick={() => setSelected((selected - 1 + total) % total)}
+            aria-label="រូបភាពមុន"
+          >
+            <ChevronLeft size={21} />
+          </button>
+          <span
+            className="album-count"
+            aria-live="polite"
+            aria-atomic="true"
+            aria-label={`រូបភាពទី ${selected + 1} ក្នុងចំណោម ${total}`}
+          >
+            <strong>{numberLabel(selected)}</strong>
+            <span aria-hidden="true" />
+            {String(total).padStart(2, "0")}
+          </span>
+          <button
+            type="button"
+            className="album-arrow"
+            disabled={total < 2}
+            onClick={() => setSelected((selected + 1) % total)}
+            aria-label="រូបភាពបន្ទាប់"
+          >
+            <ChevronRight size={21} />
+          </button>
+        </div>
+        <div
+          className="album-thumbnails"
+          ref={thumbnailsRef}
+          role="group"
+          aria-label="ជ្រើសរើសរូបភាព"
         >
-          <path
-            d="M0 162 600 600 1200 162M600 600V1200M0 900H1200M0 1638 600 1200 1200 1638"
-            vectorEffect="non-scaling-stroke"
-          />
-        </svg>
-      </SectionReveal>
+          {photos.map((photo, index) => (
+            <button
+              type="button"
+              key={photo.src}
+              className="album-thumbnail"
+              aria-pressed={selected === index}
+              aria-label={`មើលរូបភាពទី ${index + 1}`}
+              onClick={() => setSelected(index)}
+            >
+              <Image
+                src={photo.src}
+                alt=""
+                fill
+                sizes="80px"
+                draggable={false}
+              />
+            </button>
+          ))}
+        </div>
+      </div>
       {active !== null &&
         createPortal(
           <div

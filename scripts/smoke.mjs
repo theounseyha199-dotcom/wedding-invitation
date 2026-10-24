@@ -89,53 +89,27 @@ try {
         null,
         { timeout: 10000 },
       );
-      if ((await page.locator("#gallery img").count()) !== 7)
-        failures.push("Expected seven supplied gallery photos");
-      const galleryLayout = await page
-        .locator(".gallery-grid")
-        .evaluate((gallery) => ({
-          display: getComputedStyle(gallery).display,
-          overflow: getComputedStyle(gallery).overflowX,
-          scrollWidth: gallery.scrollWidth,
-          clientWidth: gallery.clientWidth,
-          imageFits: [...gallery.querySelectorAll("img")].every(
-            (image) => getComputedStyle(image).objectFit === "cover",
-          ),
-          aspectRatio: getComputedStyle(gallery).aspectRatio,
-          circle: getComputedStyle(gallery.querySelector(".gallery-panel-7"))
-            .borderRadius,
-          panels: [...gallery.querySelectorAll(".gallery-tile")]
-            .slice(0, 6)
-            .every((panel) =>
-              getComputedStyle(panel).clipPath.startsWith("polygon("),
-            ),
-        }));
+      if ((await page.locator(".album-photo").count()) !== 7)
+        failures.push("Expected seven supplied album photos");
       if (
-        galleryLayout.display !== "block" ||
-        galleryLayout.aspectRatio !== "2 / 3" ||
-        galleryLayout.circle !== "50%" ||
-        !galleryLayout.panels ||
-        galleryLayout.scrollWidth > galleryLayout.clientWidth + 1 ||
-        !galleryLayout.imageFits
+        !(await page
+          .locator(".album-photo")
+          .evaluateAll((images) =>
+            images.every(
+              (image) => getComputedStyle(image).objectFit === "contain",
+            ),
+          ))
       )
-        failures.push(
-          "Gallery was not a responsive collage with six shaped panels and a circular center",
-        );
-      for (const [index, image] of (
-        await page.locator("#gallery img").all()
-      ).entries()) {
-        await image.scrollIntoViewIfNeeded();
-        await page.waitForFunction(
-          (photoIndex) => {
-            const element =
-              document.querySelectorAll("#gallery img")[photoIndex];
-            return element && element.complete && element.naturalWidth > 0;
-          },
-          index,
-          { timeout: 10000 },
-        );
-      }
-      await page.locator(".gallery-tile").first().click();
+        failures.push("Album photos must remain uncropped");
+      await page.locator(".album-thumbnail").nth(3).click();
+      if (
+        (await page
+          .locator(".album-thumbnail")
+          .nth(3)
+          .getAttribute("aria-pressed")) !== "true"
+      )
+        failures.push("Album thumbnail did not select photo");
+      await page.locator(".album-portrait").click();
       if (
         !(await page.getByRole("dialog", { name: "កម្រងរូបភាព" }).isVisible())
       )
@@ -356,13 +330,13 @@ try {
         .getAttribute("data-active")) !== "false"
     )
       failures.push(`${width}px offscreen hero butterfly did not pause`);
-    for (let index = 1; index <= 7; index++) {
-      const selector = `.gallery-reveal-${index}`;
-      await page.locator(selector).scrollIntoViewIfNeeded();
+    for (let index = 0; index < 7; index++) {
+      await page.locator(".album-thumbnail").nth(index).click();
       await page.waitForFunction(
-        (target) =>
-          getComputedStyle(document.querySelector(target)).opacity === "1",
-        selector,
+        () =>
+          getComputedStyle(document.querySelector(".album-photo.is-selected"))
+            .opacity === "1",
+        null,
         { timeout: 3000 },
       );
     }

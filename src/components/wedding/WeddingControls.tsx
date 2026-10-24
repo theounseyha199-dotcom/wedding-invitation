@@ -168,7 +168,7 @@ export function WeddingControls({ config }: { config: WeddingConfig }) {
         ),
       );
       setQuietSectionVisible(
-        ["invitation", "gallery", "closing"].some((id) => {
+        ["invitation", "gallery", "gift", "closing"].some((id) => {
           const page = document.getElementById(id);
           if (!page) return false;
           const rect = page.getBoundingClientRect();

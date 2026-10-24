@@ -14,9 +14,9 @@ const agents = [
 ];
 const client = await request.newContext({ baseURL });
 const productionOrigin = "https://wedding-invitation-three-jade.vercel.app";
-const expectedImageURL = `${productionOrigin}/socail-share.png`;
+const expectedImageURL = `${productionOrigin}/thumnail.png`;
 const expected = await readFile(
-  new URL("../public/socail-share.png", import.meta.url),
+  new URL("../public/thumnail.png", import.meta.url),
 );
 assert(
   expected
@@ -102,7 +102,7 @@ try {
       imageURL = tags.get("og:image");
       assert.equal(imageURL, expectedImageURL);
       assert.equal(tags.get("twitter:image"), imageURL);
-      assert.equal(new URL(imageURL).pathname, "/socail-share.png");
+      assert.equal(new URL(imageURL).pathname, "/thumnail.png");
       if (path === "/") {
         assert.match(tags.get("robots"), /\bindex\b/);
         assert.doesNotMatch(tags.get("robots"), /\bnoindex\b/);
@@ -175,7 +175,7 @@ try {
   console.log(
     "robots.txt allows crawling; sitemap contains only the public homepage.",
   );
-  const response = await client.get(imageURL, {
+  const response = await client.get(new URL(imageURL).pathname, {
     headers: { "User-Agent": agents[1] },
   });
   assert.equal(response.status(), 200);
@@ -183,7 +183,7 @@ try {
   const digest = (bytes) => createHash("sha256").update(bytes).digest("hex");
   assert.equal(digest(await response.body()), digest(expected));
   console.log(
-    `Public thumbnail matches socail-share.png exactly (${imageWidth} × ${imageHeight}).`,
+    `Public thumbnail matches thumnail.png exactly (${imageWidth} × ${imageHeight}).`,
   );
 } finally {
   await client.dispose();
